@@ -1,0 +1,14 @@
+{
+    "name": "nebo15/nebo15.warehouse",
+    "description": "warehouse",
+    "license": "APACHE 2",
+    "authors": [
+        {
+            "name": "Oleh Samorai",
+            "email": "oleg.samorai@gmail.com"
+        }
+    ],
+    "require": {
+        "slim/slim": "~2.6"
+    }
+}
