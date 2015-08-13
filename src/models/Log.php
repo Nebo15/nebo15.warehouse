@@ -10,6 +10,6 @@ class Log {
 
     public function log($string)
     {
-        file_put_contents($this->file, $string);
+        file_put_contents($this->file, $string.PHP_EOL, FILE_APPEND);
     }
 }
