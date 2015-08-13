@@ -1,3 +1,4 @@
 /vendor/
 /settings/servers/*
 .idea
+/www/logs/logs.log
