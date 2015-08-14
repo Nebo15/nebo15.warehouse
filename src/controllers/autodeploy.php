@@ -41,12 +41,10 @@ $app->group('/autodeploy', function() use($app) {
         if (is_string($payload)) {
             $data = json_decode($payload);
             if (property_exists($data, 'pull_request') && $data->pull_request->state == 'closed' && $data->pull_request->merged == 1) {
-                $repo_name = $data->pull_request->repo->name;
+                $repo_name = $data->pull_request->base->repo->name;
                 $branch = $data->pull_request->base->ref;
                 $app->modelIps->setProject($repo_name);
                 $app->modelIps->setEnv($branch);
-                $app->modelIps->setProject('mbank.api');
-                $app->modelIps->setEnv('develop');
                 $body = json_encode(['project'=>$data->repository->name]);
                 $ips = $app->modelIps->getIps();
                 foreach ($ips as $ip) {
