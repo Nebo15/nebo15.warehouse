@@ -38,16 +38,16 @@ $app->group('/autodeploy', function() use($app) {
     $app->post('/', function () use ($app) {
         $payload = file_get_contents('php://input');
         $app->logger->log($payload);
-        exit;
         if (is_string($payload)) {
             $data = json_decode($payload);
-            if ($data->state == 'passed') {
-                $commit_id = $data->commit;
-                $app->modelIps->setProject($data->repository->name);
-                $app->modelIps->setEnv($data->branch);
+            if (property_exists($data, 'pull_request') && $data->pull_request->state == 'closed' && $data->pull_request->merged == 1) {
+                $repo_name = $data->pull_request->repo->name;
+                $branch = $data->pull_request->base->ref;
+                $app->modelIps->setProject($repo_name);
+                $app->modelIps->setEnv($branch);
                 $app->modelIps->setProject('mbank.api');
                 $app->modelIps->setEnv('develop');
-                $body = json_encode(['project'=>$data->repository->name, 'commit' => $commit_id]);
+                $body = json_encode(['project'=>$data->repository->name]);
                 $ips = $app->modelIps->getIps();
                 foreach ($ips as $ip) {
                     $client = new \Guzzle\Http\Client('http://'.$ip);
@@ -60,7 +60,6 @@ $app->group('/autodeploy', function() use($app) {
                     $request->setBody($body);
                     $request->send();
                 }
-
             }
         }
     });
