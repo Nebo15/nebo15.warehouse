@@ -37,8 +37,7 @@ $app->group('/ips', function () use ($app) {
 $app->group('/autodeploy', function() use($app) {
     $app->post('/', function () use ($app) {
         $payload = $app->request->params();
-
-        $app->logger->log($payload);
+        $app->logger->log(json_encode($payload));
         exit;
         if (is_string($payload)) {
             $data = json_decode($payload);
