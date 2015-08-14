@@ -45,7 +45,7 @@ $app->group('/autodeploy', function() use($app) {
                 $branch = $data->pull_request->base->ref;
                 $app->modelIps->setProject($repo_name);
                 $app->modelIps->setEnv($branch);
-                $body = json_encode(['project'=>$data->repository->name]);
+                $body = json_encode(['project'=>$data->repository->name, 'branch' => $branch]);
                 $ips = $app->modelIps->getIps();
                 foreach ($ips as $ip) {
                     $client = new \Guzzle\Http\Client('http://'.$ip);
