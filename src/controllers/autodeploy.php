@@ -43,21 +43,15 @@ $app->group('/autodeploy', function() use($app) {
             if (property_exists($data, 'pull_request') && $data->pull_request->state == 'closed' && $data->pull_request->merged == 1) {
                 $repo_name = $data->pull_request->base->repo->name;
                 $branch = $data->pull_request->base->ref;
+            } elseif (property_exists($data, 'head_commit') && property_exists($data, 'ref')) {
+                $repo_name = $data->repository->name;
+                list(,,$branch) = explode('/', $data->ref);
+            }
+            if ($branch and $repo_name) {
                 $app->modelIps->setProject($repo_name);
                 $app->modelIps->setEnv($branch);
-                $body = json_encode(['project'=>$data->repository->name, 'branch' => $branch]);
-                $ips = $app->modelIps->getIps();
-                foreach ($ips as $ip) {
-                    $client = new \Guzzle\Http\Client('http://'.$ip);
-                    $client->setDefaultOption('headers', ['Content-type' => 'application/json']);
-                    $client->setDefaultOption('exceptions', false);
-                    $client->setDefaultOption('timeout', 20);
-                    $client->setDefaultOption('connecttimeout', 0);
-                    $client->setDefaultOption('debug', false);
-                    $request = $client->post("/", [], []);
-                    $request->setBody($body);
-                    $request->send();
-                }
+                $body = json_encode(['project'=>$repo_name, 'branch' => $branch]);
+                $app->deploy->run($body, $app->modelIps->getIps());
             }
         }
     });

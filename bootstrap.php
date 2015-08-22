@@ -10,6 +10,10 @@ $app->container->singleton('modelIps', function() use ($app) {
     return new Models\Ips();
 });
 
+$app->container->singleton('deploy', function() use ($app) {
+    return new Models\Deploy();
+});
+
 $app->container->singleton('logger', function () {
     return new Models\Log(dirname(__FILE__) . '/www/logs/logs.log');
 });
